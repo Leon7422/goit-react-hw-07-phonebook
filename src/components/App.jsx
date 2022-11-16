@@ -3,14 +3,19 @@ import { ContactForm } from './ContactForm/ContactForm';
 import { Filter } from './Filter/Filter';
 import { ContactList } from './ContactList/ContactList';
 import { useDispatch } from 'react-redux';
-import { addContact } from 'redux/contactsSlice';
 import { getFilter, getContacts } from 'redux/selectors';
 import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { fetchContacts, addContactApi } from 'redux/operations';
 
 export const Phonebook = () => {
   const filteredContacts = useSelector(getFilter);
   const actualContacts = useSelector(getContacts);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   const checkContactsDublicate = data => {
     const userData = actualContacts.value.find(contact => {
@@ -27,12 +32,12 @@ export const Phonebook = () => {
     if (userInfo) {
       return alert(`${userInfo.name} is already in contact`);
     }
-    dispatch(addContact(data.name, data.number));
+    dispatch(addContactApi({ name: data.name, number: data.number }));
   };
 
   const normilezedFilter = filteredContacts.value.toLowerCase();
   const visibleContacts = actualContacts.value.filter(el => {
-    return el.name.toLowerCase().includes(normilezedFilter);
+    return el.userInfo.name.toLowerCase().includes(normilezedFilter);
   });
 
   return (
